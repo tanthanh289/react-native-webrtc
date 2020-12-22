@@ -18,6 +18,7 @@
 
 #import "WebRTCModule.h"
 #import "WebRTCModule+RTCPeerConnection.h"
+#import "WebRTCModule+StatsReporting.h"
 
 @interface WebRTCModule ()
 @end
@@ -44,6 +45,8 @@
   [_peerConnections removeAllObjects];
 
   _peerConnectionFactory = nil;
+
+  [self stopStatsReporting];
 }
 
 - (instancetype)init
@@ -113,8 +116,14 @@ RCT_EXPORT_MODULE();
     kEventPeerConnectionDidOpenDataChannel,
     kEventDataChannelStateChanged,
     kEventDataChannelReceiveMessage,
-    kEventMediaStreamTrackMuteChanged
+    kEventMediaStreamTrackMuteChanged,
+    kEventSpeaking,
+    kEventStopSpeaking,
   ];
+}
+
+- (void)invalidate {
+  [self stopStatsReporting];
 }
 
 @end

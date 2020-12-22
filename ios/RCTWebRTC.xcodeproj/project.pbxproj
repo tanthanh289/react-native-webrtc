@@ -18,6 +18,8 @@
 		35EC07E61CB73DFE00F3D79C /* RCTConvert+WebRTC.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EC07E51CB73DFE00F3D79C /* RCTConvert+WebRTC.m */; };
 		35EC083A1CB9AEE900F3D79C /* WebRTCModule+RTCDataChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = 35EC08391CB9AEE900F3D79C /* WebRTCModule+RTCDataChannel.m */; };
 		DECBD39D256D3A2D00B987E5 /* WebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DECBD39C256D3A2D00B987E5 /* WebRTC.xcframework */; platformFilter = ios; };
+		62CBBCC9249B8F77006BA9CF /* LocalAudioAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = 62CBBCC8249B8F77006BA9CF /* LocalAudioAnalyzer.m */; };
+		62D287FA248F956900F9B219 /* WebRTCModule+StatsReporting.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D287F9248F956900F9B219 /* WebRTCModule+StatsReporting.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,6 +54,10 @@
 		35EC07E51CB73DFE00F3D79C /* RCTConvert+WebRTC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+WebRTC.m"; sourceTree = "<group>"; };
 		35EC08381CB9AEC400F3D79C /* WebRTCModule+RTCDataChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WebRTCModule+RTCDataChannel.h"; sourceTree = "<group>"; };
 		35EC08391CB9AEE900F3D79C /* WebRTCModule+RTCDataChannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "WebRTCModule+RTCDataChannel.m"; sourceTree = "<group>"; };
+		628886BD2490C69D00CB7FE2 /* WebRTCModule+StatsReporting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WebRTCModule+StatsReporting.h"; sourceTree = "<group>"; };
+		62CBBCC7249B8F77006BA9CF /* LocalAudioAnalyzer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocalAudioAnalyzer.h; sourceTree = "<group>"; };
+		62CBBCC8249B8F77006BA9CF /* LocalAudioAnalyzer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocalAudioAnalyzer.m; sourceTree = "<group>"; };
+		62D287F9248F956900F9B219 /* WebRTCModule+StatsReporting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WebRTCModule+StatsReporting.m"; sourceTree = "<group>"; };
 		DECBD39C256D3A2D00B987E5 /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WebRTC.xcframework; path = ../apple/WebRTC.xcframework; sourceTree = "<group>"; };
 		DEFDBC26256574F500344B23 /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = WebRTC.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -102,10 +108,14 @@
 				35A2223D1CB493C00015FD5C /* WebRTCModule+RTCMediaStream.m */,
 				35A2223E1CB493C00015FD5C /* WebRTCModule+RTCPeerConnection.h */,
 				35A2223F1CB493C00015FD5C /* WebRTCModule+RTCPeerConnection.m */,
+				628886BD2490C69D00CB7FE2 /* WebRTCModule+StatsReporting.h */,
+				62D287F9248F956900F9B219 /* WebRTCModule+StatsReporting.m */,
 				0B56CFFE212C12EF00213CEE /* WebRTCModule+VideoTrackAdapter.h */,
 				0B56CFFF212C12EF00213CEE /* WebRTCModule+VideoTrackAdapter.m */,
 				35A222441CB493C00015FD5C /* WebRTCModule.h */,
 				35A222451CB493C00015FD5C /* WebRTCModule.m */,
+				62CBBCC7249B8F77006BA9CF /* LocalAudioAnalyzer.h */,
+				62CBBCC8249B8F77006BA9CF /* LocalAudioAnalyzer.m */,
 			);
 			name = RCTWebRTC;
 			path = ../apple/RCTWebRTC;
@@ -180,6 +190,8 @@
 				0B56D000212C12EF00213CEE /* WebRTCModule+VideoTrackAdapter.m in Sources */,
 				35A2226C1CB493C00015FD5C /* WebRTCModule+RTCMediaStream.m in Sources */,
 				0BDDA6E020C18B6B00B38B45 /* VideoCaptureController.m in Sources */,
+				62D287FA248F956900F9B219 /* WebRTCModule+StatsReporting.m in Sources */,
+				62CBBCC9249B8F77006BA9CF /* LocalAudioAnalyzer.m in Sources */,
 				0BDDA6DD20C17E7C00B38B45 /* RTCMediaStreamTrack+React.m in Sources */,
 				35A222701CB493C00015FD5C /* WebRTCModule.m in Sources */,
 				35EC07E61CB73DFE00F3D79C /* RCTConvert+WebRTC.m in Sources */,

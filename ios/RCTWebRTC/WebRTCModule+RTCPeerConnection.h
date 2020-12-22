@@ -16,6 +16,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, RTCMediaStream *> *remoteStreams;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, RTCMediaStreamTrack *> *remoteTracks;
 @property (nonatomic, weak) id webRTCModule;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, RTCMediaStreamTrack*> *disabledVideoSenders;
 
 @end
 

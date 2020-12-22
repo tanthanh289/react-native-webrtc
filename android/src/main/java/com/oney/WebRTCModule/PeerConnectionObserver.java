@@ -7,6 +7,7 @@ import android.util.SparseArray;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -18,7 +19,9 @@ import org.webrtc.IceCandidate;
 import org.webrtc.MediaStream;
 import org.webrtc.MediaStreamTrack;
 import org.webrtc.PeerConnection;
+import org.webrtc.RTCStats;
 import org.webrtc.RtpReceiver;
+import org.webrtc.RtpSender;
 import org.webrtc.VideoTrack;
 
 import java.io.UnsupportedEncodingException;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
@@ -475,4 +480,81 @@ class PeerConnectionObserver implements PeerConnection.Observer {
         }
         return null;
     }
+
+    public void getStatsReport(Callback callback) {
+        WritableMap data = Arguments.createMap();
+        peerConnection.getStats(rtcStatsReport -> {
+            Map<String, RTCStats> statsMap = rtcStatsReport.getStatsMap();
+            for (String key: statsMap.keySet()) {
+                RTCStats stats = statsMap.get(key);
+                if (stats == null) {
+                    continue;
+                }
+                if (stats.getType().equals("track")) {
+                    Map<String, Object> members = stats.getMembers();
+                    String mediaType = (String) members.get("kind");
+                    if ("audio".equals(mediaType)) {
+                        String trackIdentifier = (String) members.get("trackIdentifier");
+                        if (trackIdentifier != null) {
+                            double totalAudioEnergy = (double) members.get("totalAudioEnergy");
+                            double totalSamplesDuration = (double) members.get("totalSamplesDuration");
+                            WritableMap payload = Arguments.createMap();
+                            payload.putDouble("totalAudioEnergy", totalAudioEnergy);
+                            payload.putDouble("totalSamplesDuration", totalSamplesDuration);
+                            payload.putInt("peerConnectionId", id);
+                            data.putMap(trackIdentifier, payload);
+                        }
+                    }
+                }
+            }
+            callback.invoke(data);
+        });
+    }
+
+
+    Set<String> removedSender = new LinkedHashSet<>();
+    public void disableVideoSender() {
+        if (this.peerConnection != null) {
+            List<RtpSender> senders = this.peerConnection.getSenders();
+            for (RtpSender sender : senders) {
+                if (sender.track().kind().equals(MediaStreamTrack.VIDEO_TRACK_KIND)) {
+                    removedSender.add(sender.id());
+                    sender.setTrack(null, false); // replaceTrack
+                }
+
+            }
+        }
+    }
+
+    private List<VideoTrack> getLocalVideoTracks() {
+        ArrayList<VideoTrack> videoTracks = new ArrayList<>();
+        if (this.localStreams == null)
+            return videoTracks;
+
+        for (MediaStream stream : this.localStreams) {
+            for (VideoTrack videoTrack : stream.videoTracks) {
+                if (videoTrack.enabled()) {
+                    videoTracks.add(videoTrack);
+                }
+            }
+        }
+        return videoTracks;
+    }
+
+    public void enableVideoSender() {
+        if (this.peerConnection != null) {
+            List<RtpSender> senders = this.peerConnection.getSenders();
+            for (RtpSender sender : senders) {
+                if(removedSender.contains(sender.id())){
+                    List<VideoTrack> videoTracks = this.getLocalVideoTracks();
+                    if (videoTracks.size() > 0) {
+                        sender.setTrack(videoTracks.get(0), false);
+                    }
+                    Log.i("LOCAL VIDEO TRACKS", videoTracks.size() + "");
+                }
+            }
+            removedSender.clear();
+        }
+    }
+
 }

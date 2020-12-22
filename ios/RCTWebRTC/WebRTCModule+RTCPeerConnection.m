@@ -19,6 +19,7 @@
 #import <WebRTC/RTCIceCandidate.h>
 #import <WebRTC/RTCSessionDescription.h>
 #import <WebRTC/RTCStatisticsReport.h>
+#import <WebRTC/RTCRtpSender.h>
 
 #import "WebRTCModule.h"
 #import "WebRTCModule+RTCDataChannel.h"
@@ -77,6 +78,16 @@
     objc_setAssociatedObject(self, @selector(webRTCModule), webRTCModule, OBJC_ASSOCIATION_ASSIGN);
 }
 
+- (NSMutableDictionary<NSString *, RTCMediaStreamTrack *> *)disabledVideoSenders
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setDisabledVideoSenders:(NSMutableDictionary<NSString *, RTCMediaStreamTrack *> *)disabledVideoSenders
+{
+  objc_setAssociatedObject(self, @selector(disabledVideoSenders), disabledVideoSenders, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 @end
 
 @implementation WebRTCModule (RTCPeerConnection)
@@ -99,6 +110,7 @@ RCT_EXPORT_METHOD(peerConnectionInit:(RTCConfiguration*)configuration
   peerConnection.remoteStreams = [NSMutableDictionary new];
   peerConnection.remoteTracks = [NSMutableDictionary new];
   peerConnection.videoTrackAdapters = [NSMutableDictionary new];
+  peerConnection.disabledVideoSenders = [NSMutableDictionary new];
   peerConnection.webRTCModule = self;
   self.peerConnections[objectID] = peerConnection;
 }
@@ -300,6 +312,37 @@ RCT_EXPORT_METHOD(peerConnectionGetStats:(nonnull NSNumber *) objectID
   [peerConnection statisticsWithCompletionHandler:^(RTCStatisticsReport *report) {
     resolve([self statsToJSON:report]);
   }];
+}
+
+RCT_EXPORT_METHOD(peerConnectionStopVideoSender:(nonnull NSNumber *)objectID)
+{
+  RTCPeerConnection *peerConnection = self.peerConnections[objectID];
+  if (!peerConnection) {
+    NSLog(@"PeerConnection ID not found");
+    return;
+  }
+  for (RTCRtpSender *sender in peerConnection.senders) {
+    if ([sender.track.kind isEqualToString:kRTCMediaStreamTrackKindVideo]) {
+      [peerConnection.disabledVideoSenders setObject:sender.track forKey:sender.senderId];
+      [sender setTrack:nil];
+    }
+  }
+}
+
+RCT_EXPORT_METHOD(peerConnectionStartVideoSender:(nonnull NSNumber *)objectID)
+{
+  RTCPeerConnection *peerConnection = self.peerConnections[objectID];
+  if (!peerConnection) {
+    NSLog(@"PeerConnection ID not found");
+    return;
+  }
+  for (RTCRtpSender *sender in peerConnection.senders) {
+    RTCMediaStreamTrack *track = [peerConnection.disabledVideoSenders objectForKey:sender.senderId];
+    if (track != nil) {
+      [sender setTrack:track];
+      [peerConnection.disabledVideoSenders removeObjectForKey:sender.senderId];
+    }
+  }
 }
 
 /**

@@ -36,6 +36,7 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
     final Map<String, MediaStream> localStreams;
 
     private GetUserMediaImpl getUserMediaImpl;
+    private LocalAudioAnalyzer localAudioAnalyzer;
 
     public static class Options {
         private VideoEncoderFactory videoEncoderFactory = null;
@@ -107,8 +108,11 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
             }
         }
 
+        localAudioAnalyzer = new LocalAudioAnalyzer();
         if (adm == null) {
-            adm = JavaAudioDeviceModule.builder(reactContext).createAudioDeviceModule();
+            adm = JavaAudioDeviceModule.builder(reactContext)
+                    .setSamplesReadyCallback(localAudioAnalyzer)
+                    .createAudioDeviceModule();
         }
 
         mFactory
@@ -963,4 +967,42 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
             pco.dataChannelSend(dataChannelId, data, type);
         }
     }
+
+
+    @ReactMethod
+    public void startStatsReporting(float speakingThreshold) {
+        localAudioAnalyzer.start(speakingThreshold, speaking -> {
+            if (speaking) {
+                sendEvent("speaking", null);
+            } else {
+                sendEvent("stopSpeaking", null);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void stopStatsReporting() {
+        localAudioAnalyzer.stop();
+    }
+
+    @ReactMethod
+    public void peerConnectionStopVideoSender(int id) {
+        try {
+            PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
+            pco.disableVideoSender();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void peerConnectionStartVideoSender(int id) {
+        try {
+            PeerConnectionObserver pco = mPeerConnectionObservers.get(id);
+            pco.enableVideoSender();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }

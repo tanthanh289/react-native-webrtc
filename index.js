@@ -8,6 +8,7 @@ import MediaStream from './MediaStream';
 import MediaStreamTrack from './MediaStreamTrack';
 import mediaDevices from './MediaDevices';
 import permissions from './Permissions';
+import statsReporting from './StatsReporting';
 
 export {
   RTCPeerConnection,
@@ -18,6 +19,7 @@ export {
   MediaStreamTrack,
   mediaDevices,
   permissions,
+  statsReporting,
   registerGlobals
 };
 
